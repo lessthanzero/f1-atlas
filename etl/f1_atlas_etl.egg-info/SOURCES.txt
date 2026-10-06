@@ -1,9 +1,0 @@
-pyproject.toml
-f1_atlas_etl/__init__.py
-f1_atlas_etl/build.py
-f1_atlas_etl.egg-info/PKG-INFO
-f1_atlas_etl.egg-info/SOURCES.txt
-f1_atlas_etl.egg-info/dependency_links.txt
-f1_atlas_etl.egg-info/entry_points.txt
-f1_atlas_etl.egg-info/requires.txt
-f1_atlas_etl.egg-info/top_level.txt

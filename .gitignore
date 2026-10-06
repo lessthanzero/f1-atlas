@@ -13,3 +13,5 @@ data/derived/*
 .DS_Store
 .env
 *.sqlite
+
+*.egg-info/
