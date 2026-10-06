@@ -1,0 +1,2 @@
+[console_scripts]
+f1-atlas-etl = f1_atlas_etl.build:app
