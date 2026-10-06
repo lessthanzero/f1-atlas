@@ -1,0 +1,30 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getConstructors, hrefFor } from '../../lib/data';
+const constructors = getConstructors();
+---
+<Base title="Teams · F1 Atlas">
+  <p class="meta">CONSTRUCTORS · {constructors.length}</p>
+  <h1>Teams</h1>
+  <table class="table sticky">
+    <thead>
+      <tr><th>Team</th><th>Country</th><th>Wins</th><th>Podiums</th><th>Poles</th><th>Titles</th><th>Starts</th></tr>
+    </thead>
+    <tbody>
+      {constructors.map((c) => (
+        <tr>
+          <td><a href={hrefFor('constructor', c.id)}>{c.name}</a></td>
+          <td>{c.country ?? '—'}</td>
+          <td>{c.wins}</td>
+          <td>{c.podiums}</td>
+          <td>{c.poles}</td>
+          <td>{c.titles}</td>
+          <td>{c.starts}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</Base>
+<style>
+  .sticky thead th { position: sticky; top: 0; background: var(--paper); }
+</style>

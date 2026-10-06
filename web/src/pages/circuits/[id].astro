@@ -1,0 +1,40 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCircuits, getCircuit, hrefFor } from '../../lib/data';
+
+export function getStaticPaths() {
+  return getCircuits().map((c) => ({ params: { id: c.id } }));
+}
+
+const circuit = getCircuit(Astro.params.id!);
+---
+<Base title={`${circuit.name} · F1 Atlas`}>
+  <p class="meta">CIRCUIT</p>
+  <h1>{circuit.name}</h1>
+  <p class="meta">
+    {circuit.place ?? '—'}, {circuit.country ?? '—'} · {circuit.races ?? 0} races
+    {circuit.lengthKm ? ` · ${circuit.lengthKm} km` : ''}
+  </p>
+
+  <h2>Race history</h2>
+  <table class="table sticky">
+    <thead><tr><th>Year</th><th>Grand Prix</th><th>Winner</th></tr></thead>
+    <tbody>
+      {circuit.races.map((r: any) => (
+        <tr>
+          <td><a href={hrefFor('season', String(r.year))}>{r.year}</a></td>
+          <td><a href={hrefFor('race', String(r.id))}>{r.name}</a></td>
+          <td>
+            {r.winnerId ? (
+              <a href={hrefFor('driver', r.winnerId)}>{r.winnerName}</a>
+            ) : '—'}
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</Base>
+<style>
+  h2 { font-size: 1.1rem; margin: 1.5rem 0 0.5rem; }
+  .sticky thead th { position: sticky; top: 0; background: var(--paper); }
+</style>

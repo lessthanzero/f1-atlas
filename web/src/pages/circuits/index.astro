@@ -1,0 +1,28 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCircuits, hrefFor } from '../../lib/data';
+const circuits = getCircuits();
+---
+<Base title="Circuits · F1 Atlas">
+  <p class="meta">CIRCUITS · {circuits.length}</p>
+  <h1>Circuits</h1>
+  <table class="table sticky">
+    <thead>
+      <tr><th>Circuit</th><th>Place</th><th>Country</th><th>Races</th><th>km</th></tr>
+    </thead>
+    <tbody>
+      {circuits.map((c) => (
+        <tr>
+          <td><a href={hrefFor('circuit', c.id)}>{c.name}</a></td>
+          <td>{c.place ?? '—'}</td>
+          <td>{c.country ?? '—'}</td>
+          <td>{c.races ?? '—'}</td>
+          <td>{c.length_km ?? '—'}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</Base>
+<style>
+  .sticky thead th { position: sticky; top: 0; background: var(--paper); }
+</style>

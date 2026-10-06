@@ -18,8 +18,9 @@ html, body {
   line-height: 1.35;
 }
 a { color: inherit; }
+a:hover { color: var(--accent); }
 main {
-  max-width: 52rem;
+  max-width: 56rem;
   margin: 0 auto;
   padding: 1.25rem 1rem 3rem;
 }

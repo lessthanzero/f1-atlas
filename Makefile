@@ -1,4 +1,4 @@
-.PHONY: bootstrap build test dev etl clean
+.PHONY: bootstrap fetch etl build test dev clean
 
 bootstrap:
 	python3 -m venv .venv
@@ -6,18 +6,20 @@ bootstrap:
 	.venv/bin/pip install -e "etl[dev]"
 	cd web && npm install
 
+fetch:
+	.venv/bin/python -m f1_atlas_etl fetch
+
 etl:
-	.venv/bin/python -m f1_atlas_etl.build --out data/derived/atlas.sqlite
+	.venv/bin/python -m f1_atlas_etl build
 
 build: etl
 	cd web && npm run build
 
 test:
 	.venv/bin/pytest -q
-	cd web && npm test --if-present
 
-dev:
+dev: etl
 	cd web && npm run dev
 
 clean:
-	rm -rf web/dist data/derived/*.sqlite
+	rm -rf web/dist data/derived/*.sqlite web/src/data/generated

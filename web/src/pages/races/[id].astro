@@ -1,0 +1,74 @@
+---
+import Base from '../../layouts/Base.astro';
+import { listRaceIds, getRace, hrefFor } from '../../lib/data';
+
+export function getStaticPaths() {
+  return listRaceIds().map((id) => ({ params: { id: String(id) } }));
+}
+
+const race = getRace(Number(Astro.params.id));
+---
+<Base title={`${race.name} · F1 Atlas`}>
+  <p class="meta">RACE · {race.year} R{race.round}</p>
+  <h1>{race.name}</h1>
+  <p class="meta">
+    {race.date ?? '—'} ·
+    {race.circuitId ? (
+      <a href={hrefFor('circuit', race.circuitId)}>{race.circuitName}</a>
+    ) : '—'}
+    · <a href={hrefFor('season', String(race.year))}>{race.year}</a>
+  </p>
+
+  <h2>Race results</h2>
+  <table class="table sticky">
+    <thead>
+      <tr><th>#</th><th>Driver</th><th>Team</th><th>Grid</th><th>+/−</th><th>Laps</th><th>Time / note</th><th>Pts</th></tr>
+    </thead>
+    <tbody>
+      {race.results.map((r: any) => (
+        <tr>
+          <td>{r.posText ?? '—'}</td>
+          <td><a href={hrefFor('driver', r.driverId)}>{r.driverName}</a></td>
+          <td>
+            {r.constructorId ? (
+              <a href={hrefFor('constructor', r.constructorId)}>{r.constructorName}</a>
+            ) : '—'}
+          </td>
+          <td>{r.grid ?? '—'}</td>
+          <td>{r.gained ?? '—'}</td>
+          <td>{r.laps ?? '—'}</td>
+          <td>{r.time ?? r.retired ?? '—'}</td>
+          <td>{r.points ?? '—'}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+
+  {race.qualifying?.length > 0 && (
+    <>
+      <h2>Qualifying</h2>
+      <table class="table sticky">
+        <thead><tr><th>#</th><th>Driver</th><th>Team</th><th>Time</th></tr></thead>
+        <tbody>
+          {race.qualifying.map((q: any) => (
+            <tr>
+              <td>{q.posText ?? '—'}</td>
+              <td><a href={hrefFor('driver', q.driverId)}>{q.driverName}</a></td>
+              <td>
+                {q.constructorId ? (
+                  <a href={hrefFor('constructor', q.constructorId)}>{q.constructorName}</a>
+                ) : '—'}
+              </td>
+              <td>{q.time ?? '—'}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </>
+  )}
+</Base>
+<style>
+  h2 { font-size: 1.1rem; margin: 1.5rem 0 0.5rem; }
+  .sticky thead th { position: sticky; top: 0; background: var(--paper); }
+  a { text-decoration: none; }
+</style>

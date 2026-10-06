@@ -1,0 +1,49 @@
+---
+const base = import.meta.env.BASE_URL;
+const links = [
+  { href: base, label: 'Home' },
+  { href: `${base}seasons/`, label: 'Seasons' },
+  { href: `${base}drivers/`, label: 'Drivers' },
+  { href: `${base}constructors/`, label: 'Teams' },
+  { href: `${base}circuits/`, label: 'Circuits' },
+];
+---
+<nav class="nav">
+  <a class="brand" href={base}>F1 Atlas</a>
+  <ul>
+    {links.slice(1).map((l) => (
+      <li><a href={l.href}>{l.label}</a></li>
+    ))}
+  </ul>
+</nav>
+
+<style>
+  .nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.75rem 1.25rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .brand {
+    font-family: var(--mono);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    text-decoration: none;
+  }
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  a { text-decoration: none; }
+  ul a { color: var(--muted); font-size: 0.92rem; }
+  ul a:hover { color: var(--ink); }
+</style>

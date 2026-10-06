@@ -1,0 +1,35 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getConstructors, getConstructor, hrefFor } from '../../lib/data';
+
+export function getStaticPaths() {
+  return getConstructors().map((c) => ({ params: { id: c.id } }));
+}
+
+const team = getConstructor(Astro.params.id!);
+---
+<Base title={`${team.name} · F1 Atlas`}>
+  <p class="meta">CONSTRUCTOR</p>
+  <h1>{team.name}</h1>
+  <p class="meta">
+    {team.country ?? '—'} · {team.titles} titles · {team.wins} wins · {team.podiums} podiums · {team.starts} starts
+  </p>
+
+  <h2>Season trajectory</h2>
+  <table class="table">
+    <thead><tr><th>Year</th><th>Wins</th><th>Podiums</th><th>Pts</th></tr></thead>
+    <tbody>
+      {team.seasons.map((s: any) => (
+        <tr>
+          <td><a href={hrefFor('season', String(s.year))}>{s.year}</a></td>
+          <td>{s.wins}</td>
+          <td>{s.podiums}</td>
+          <td>{Number(s.points).toFixed(1)}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</Base>
+<style>
+  h2 { font-size: 1.1rem; margin: 1.5rem 0 0.5rem; }
+</style>

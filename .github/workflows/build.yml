@@ -15,6 +15,7 @@ jobs:
         with:
           node-version: '20'
       - run: python -m pip install -e "etl[dev]"
+      - run: python -m f1_atlas_etl build
       - run: pytest -q
       - run: |
           cd web

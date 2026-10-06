@@ -1,0 +1,34 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getDrivers, hrefFor } from '../../lib/data';
+const drivers = getDrivers();
+---
+<Base title="Drivers · F1 Atlas">
+  <p class="meta">DRIVERS · {drivers.length}</p>
+  <h1>Drivers</h1>
+  <table class="table sticky">
+    <thead>
+      <tr><th>Driver</th><th>Nat</th><th>Wins</th><th>Podiums</th><th>Poles</th><th>Titles</th><th>Starts</th></tr>
+    </thead>
+    <tbody>
+      {drivers.map((d) => (
+        <tr>
+          <td><a href={hrefFor('driver', d.id)}>{d.name}</a></td>
+          <td>{d.nationality ?? '—'}</td>
+          <td>{d.wins}</td>
+          <td>{d.podiums}</td>
+          <td>{d.poles}</td>
+          <td>{d.titles}</td>
+          <td>{d.starts}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</Base>
+<style>
+  .sticky thead th {
+    position: sticky;
+    top: 0;
+    background: var(--paper);
+  }
+</style>

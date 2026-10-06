@@ -1,0 +1,69 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getSeasons, getSeason, hrefFor } from '../../lib/data';
+
+export function getStaticPaths() {
+  return getSeasons().map((year) => ({ params: { year: String(year) } }));
+}
+
+const year = Number(Astro.params.year);
+const season = getSeason(year);
+---
+<Base title={`${year} · F1 Atlas`}>
+  <p class="meta">SEASON</p>
+  <h1>{year}</h1>
+
+  <h2>Driver championship</h2>
+  <table class="table">
+    <thead><tr><th>#</th><th>Driver</th><th>Pts</th></tr></thead>
+    <tbody>
+      {season.driverStandings.map((row) => (
+        <tr>
+          <td>{row.posText ?? '—'}</td>
+          <td><a href={hrefFor('driver', row.driverId)}>{row.driverName}</a></td>
+          <td>{row.points ?? '—'}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+
+  {season.constructorStandings.length > 0 && (
+    <>
+      <h2>Constructor championship</h2>
+      <table class="table">
+        <thead><tr><th>#</th><th>Team</th><th>Pts</th></tr></thead>
+        <tbody>
+          {season.constructorStandings.map((row) => (
+            <tr>
+              <td>{row.posText ?? '—'}</td>
+              <td><a href={hrefFor('constructor', row.constructorId)}>{row.constructorName}</a></td>
+              <td>{row.points ?? '—'}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </>
+  )}
+
+  <h2>Races</h2>
+  <table class="table">
+    <thead><tr><th>Rd</th><th>Grand Prix</th><th>Circuit</th><th>Date</th></tr></thead>
+    <tbody>
+      {season.races.map((race) => (
+        <tr>
+          <td>{race.round}</td>
+          <td><a href={hrefFor('race', String(race.id))}>{race.name}</a></td>
+          <td>
+            {race.circuitId ? (
+              <a href={hrefFor('circuit', race.circuitId)}>{race.circuitName}</a>
+            ) : '—'}
+          </td>
+          <td>{race.date ?? '—'}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</Base>
+<style>
+  h2 { font-size: 1.1rem; margin: 1.75rem 0 0.55rem; }
+</style>

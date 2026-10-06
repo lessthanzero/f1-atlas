@@ -1,0 +1,49 @@
+---
+import Base from '../../layouts/Base.astro';
+import Sparkline from '../../components/Sparkline.astro';
+import { getDrivers, getDriver, hrefFor } from '../../lib/data';
+
+export function getStaticPaths() {
+  return getDrivers().map((d) => ({ params: { id: d.id } }));
+}
+
+const driver = getDriver(Astro.params.id!);
+---
+<Base title={`${driver.name} · F1 Atlas`}>
+  <p class="meta">DRIVER · {driver.abbreviation ?? driver.id}</p>
+  <h1>{driver.name}</h1>
+  <p class="meta">
+    {driver.nationality ?? '—'} · {driver.titles} titles · {driver.wins} wins · {driver.podiums} podiums · {driver.poles} poles · {driver.starts} starts
+  </p>
+
+  <h2>Career finishing positions</h2>
+  <Sparkline values={driver.finishSparkline ?? []} width={280} height={36} />
+
+  <h2>Results</h2>
+  <table class="table sticky">
+    <thead>
+      <tr><th>Year</th><th>Race</th><th>Grid</th><th>Fin</th><th>+/−</th><th>Team</th><th>Pts</th></tr>
+    </thead>
+    <tbody>
+      {driver.results.map((r: any) => (
+        <tr>
+          <td><a href={hrefFor('season', String(r.year))}>{r.year}</a></td>
+          <td><a href={hrefFor('race', String(r.raceId))}>{r.raceName}</a></td>
+          <td>{r.grid ?? '—'}</td>
+          <td>{r.posText ?? '—'}</td>
+          <td>{r.gained ?? '—'}</td>
+          <td>
+            {r.constructorId ? (
+              <a href={hrefFor('constructor', r.constructorId)}>{r.constructorName}</a>
+            ) : '—'}
+          </td>
+          <td>{r.points ?? '—'}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</Base>
+<style>
+  h2 { font-size: 1.1rem; margin: 1.5rem 0 0.5rem; }
+  .sticky thead th { position: sticky; top: 0; background: var(--paper); }
+</style>

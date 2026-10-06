@@ -2,7 +2,7 @@ from pathlib import Path
 import sqlite3
 import tempfile
 
-from f1_atlas_etl.build import SCHEMA
+from f1_atlas_etl.schema import SCHEMA
 
 
 def test_schema_creates_core_tables():
@@ -17,4 +17,13 @@ def test_schema_creates_core_tables():
             )
         }
         conn.close()
-        assert {"meta", "seasons", "races", "drivers", "constructors", "circuits"} <= tables
+        assert {
+            "meta",
+            "seasons",
+            "races",
+            "drivers",
+            "constructors",
+            "circuits",
+            "race_results",
+            "driver_standings",
+        } <= tables

@@ -1,0 +1,33 @@
+---
+interface Props {
+  values: Array<number | null | undefined>;
+  width?: number;
+  height?: number;
+}
+const { values, width = 160, height = 28 } = Astro.props;
+const nums = values.filter((v): v is number => typeof v === 'number' && v > 0);
+let points = '';
+if (nums.length > 1) {
+  const max = Math.max(...nums, 20);
+  const step = width / (nums.length - 1);
+  points = nums
+    .map((v, i) => {
+      const x = i * step;
+      const y = ((v - 1) / (max - 1 || 1)) * (height - 2) + 1;
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    })
+    .join(' ');
+}
+---
+{nums.length > 1 ? (
+  <svg class="spark" width={width} height={height} viewBox={`0 0 ${width} ${height}`} aria-hidden="true">
+    <polyline fill="none" stroke="currentColor" stroke-width="1.25" points={points} />
+  </svg>
+) : (
+  <span class="empty">—</span>
+)}
+
+<style>
+  .spark { display: block; color: var(--accent); }
+  .empty { color: var(--muted); font-family: var(--mono); font-size: 0.8rem; }
+</style>

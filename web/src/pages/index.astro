@@ -1,20 +1,139 @@
 ---
 import Base from '../layouts/Base.astro';
+import { getHome, getSeason, getSearchIndex, hrefFor, hasGeneratedData } from '../lib/data';
+
+const ready = hasGeneratedData();
+const home = ready ? getHome() : null;
+const season = home?.latestSeason ? getSeason(home.latestSeason) : null;
+const search = ready ? getSearchIndex() : null;
+const base = import.meta.env.BASE_URL;
 ---
 <Base title="F1 Atlas">
-  <p class="meta">F1 ATLAS · v0.1 scaffold</p>
+  <p class="meta">F1 ATLAS · historical reference</p>
   <h1>F1 Atlas</h1>
   <p class="lede">
-    Historical Formula 1 reference — dense tables, micro-visualisations, no live-score noise.
+    Dense tables and micro-visualisations for Formula 1 history.
+    Not a live timing board — a personal atlas of seasons, drivers, teams, and circuits.
   </p>
-  <table class="table" aria-label="Placeholder season standings">
-    <thead>
-      <tr><th>#</th><th>Driver</th><th>Pts</th></tr>
-    </thead>
-    <tbody>
-      <tr><td>1</td><td>Scaffold</td><td>—</td></tr>
-      <tr><td>2</td><td>Wire ETL</td><td>—</td></tr>
-      <tr><td>3</td><td>Ship tables</td><td>—</td></tr>
-    </tbody>
-  </table>
+
+  {ready && home ? (
+    <>
+      <p class="meta">
+        {home.driverCount} drivers · {home.constructorCount} teams · {home.circuitCount} circuits · {home.raceCount} races
+        {home.sourceTag ? ` · source ${home.sourceTag}` : ''}
+      </p>
+
+      <label class="search-label" for="q">Search</label>
+      <input id="q" class="search" type="search" placeholder="Driver, team, circuit, year…" autocomplete="off" />
+      <ul id="results" class="results" hidden></ul>
+
+      {season && (
+        <section>
+          <h2>
+            <a href={`${base}seasons/${season.year}/`}>{season.year} standings</a>
+          </h2>
+          <table class="table">
+            <thead>
+              <tr><th>#</th><th>Driver</th><th>Pts</th></tr>
+            </thead>
+            <tbody>
+              {season.driverStandings.slice(0, 10).map((row) => (
+                <tr>
+                  <td>{row.posText ?? '—'}</td>
+                  <td><a href={hrefFor('driver', row.driverId)}>{row.driverName}</a></td>
+                  <td>{row.points ?? '—'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
+      )}
+
+      <p class="meta attr">{home.attribution}</p>
+    </>
+  ) : (
+    <p class="lede">Run <code>make etl</code> to generate site data from F1DB.</p>
+  )}
 </Base>
+
+{ready && search && (
+  <script define:vars={{ search, base }}>
+    const input = document.getElementById('q');
+    const list = document.getElementById('results');
+    const all = [
+      ...search.drivers,
+      ...search.constructors,
+      ...search.circuits,
+      ...search.seasons,
+    ];
+    const href = (type, id) => {
+      if (type === 'driver') return `${base}drivers/${id}/`;
+      if (type === 'constructor') return `${base}constructors/${id}/`;
+      if (type === 'circuit') return `${base}circuits/${id}/`;
+      if (type === 'season') return `${base}seasons/${id}/`;
+      return base;
+    };
+    input?.addEventListener('input', () => {
+      const q = input.value.trim().toLowerCase();
+      if (!q) {
+        list.hidden = true;
+        list.innerHTML = '';
+        return;
+      }
+      const hits = all
+        .filter((item) => item.name.toLowerCase().includes(q))
+        .slice(0, 12);
+      list.innerHTML = hits
+        .map(
+          (item) =>
+            `<li><a href="${href(item.type, item.id)}"><span class="t">${item.type}</span> ${item.name}</a></li>`
+        )
+        .join('');
+      list.hidden = hits.length === 0;
+    });
+  </script>
+)}
+
+<style>
+  .search-label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-top: 1.25rem;
+  }
+  .search {
+    width: 100%;
+    max-width: 28rem;
+    margin: 0.35rem 0 0.5rem;
+    padding: 0.55rem 0.65rem;
+    border: 1px solid var(--rule);
+    background: #fff;
+    font: inherit;
+  }
+  .results {
+    list-style: none;
+    margin: 0 0 1.5rem;
+    padding: 0;
+    max-width: 28rem;
+    border: 1px solid var(--rule);
+    background: #fff;
+  }
+  .results li a {
+    display: block;
+    padding: 0.4rem 0.65rem;
+    text-decoration: none;
+    border-bottom: 1px solid var(--rule);
+  }
+  .results .t {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-right: 0.4rem;
+  }
+  h2 { font-size: 1.15rem; margin: 1.75rem 0 0.6rem; }
+  h2 a { text-decoration: none; }
+  .attr { margin-top: 2rem; }
+  code { font-family: var(--mono); font-size: 0.9em; }
+</style>
