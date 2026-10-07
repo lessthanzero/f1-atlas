@@ -1,0 +1,113 @@
+---
+/**
+ * Grid → finish slopegraph for a race (or a driver's recent races).
+ * Left column = grid, right = finish. Classified only; DNFs listed below.
+ */
+interface Row {
+  label: string;
+  href?: string;
+  grid: number | null;
+  finish: number | null;
+  gained?: number | null;
+}
+
+interface Props {
+  rows: Row[];
+  width?: number;
+  height?: number;
+  title?: string;
+}
+
+const { rows, width = 360, height = 280, title } = Astro.props;
+
+const classified = rows.filter(
+  (r) => typeof r.grid === 'number' && r.grid > 0 && typeof r.finish === 'number' && r.finish > 0
+);
+const maxPos = Math.max(20, ...classified.map((r) => Math.max(r.grid!, r.finish!)));
+const padX = 88;
+const padY = 14;
+const chartW = width - padX * 2;
+const chartH = height - padY * 2;
+
+function y(pos: number): number {
+  return padY + ((pos - 1) / (maxPos - 1 || 1)) * chartH;
+}
+
+const leftX = padX;
+const rightX = padX + chartW;
+---
+
+{classified.length > 1 ? (
+  <figure class="gf">
+    {title && <figcaption class="cap">{title}</figcaption>}
+    <svg
+      class="chart"
+      viewBox={`0 0 ${width} ${height}`}
+      width="100%"
+      role="img"
+      aria-label="Grid to finish position changes"
+    >
+      <text x={leftX} y={10} class="axis" text-anchor="middle">Grid</text>
+      <text x={rightX} y={10} class="axis" text-anchor="middle">Finish</text>
+      {classified.map((r) => {
+        const y1 = y(r.grid!);
+        const y2 = y(r.finish!);
+        const gained = r.gained ?? r.grid! - r.finish!;
+        const tone = gained > 0 ? 'up' : gained < 0 ? 'down' : 'flat';
+        return (
+          <g class={`row ${tone}`}>
+            <line x1={leftX} y1={y1} x2={rightX} y2={y2} />
+            <circle cx={leftX} cy={y1} r="2.2" />
+            <circle cx={rightX} cy={y2} r="2.2" />
+            <text x={leftX - 8} y={y1 + 3} class="lbl left" text-anchor="end">
+              {r.grid} {r.label}
+            </text>
+            <text x={rightX + 8} y={y2 + 3} class="lbl right" text-anchor="start">
+              {r.finish}
+              {gained !== 0 ? ` (${gained > 0 ? '+' : ''}${gained})` : ''}
+            </text>
+          </g>
+        );
+      })}
+    </svg>
+  </figure>
+) : (
+  <p class="empty">Not enough classified grid→finish pairs.</p>
+)}
+
+<style>
+  .gf { margin: 0.75rem 0 1.25rem; }
+  .cap {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 0.35rem;
+  }
+  .chart { display: block; max-width: 28rem; height: auto; color: var(--ink); }
+  .axis {
+    font-family: var(--mono);
+    font-size: 9px;
+    fill: var(--muted);
+  }
+  .row line {
+    stroke: currentColor;
+    stroke-width: 1.1;
+    opacity: 0.55;
+  }
+  .row.up { color: #1a7a4c; }
+  .row.down { color: var(--accent); }
+  .row.flat { color: var(--muted); }
+  .row circle { fill: currentColor; }
+  .lbl {
+    font-family: var(--mono);
+    font-size: 8.5px;
+    fill: var(--ink);
+  }
+  .empty {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+</style>

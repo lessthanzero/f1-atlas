@@ -1,0 +1,112 @@
+---
+/**
+ * Chronological reliability strip: one cell per race start.
+ * win | podium | points | finish | dnf | other
+ */
+import type { ReliabilityOutcome } from '../lib/viz';
+
+interface Cell {
+  outcome: ReliabilityOutcome;
+  title?: string;
+}
+
+interface Props {
+  cells: Cell[];
+  max?: number;
+  caption?: string;
+  /** When true (default), treat input as newest-first and flip to older→newer. */
+  newestFirst?: boolean;
+}
+
+const { cells, max = 48, caption, newestFirst = true } = Astro.props;
+const windowed = cells.slice(0, max);
+const slice = newestFirst ? [...windowed].reverse() : windowed;
+const counts = slice.reduce(
+  (acc, c) => {
+    acc[c.outcome] = (acc[c.outcome] ?? 0) + 1;
+    return acc;
+  },
+  {} as Record<string, number>
+);
+const classified = (counts.win ?? 0) + (counts.podium ?? 0) + (counts.points ?? 0) + (counts.finish ?? 0);
+const dnfs = counts.dnf ?? 0;
+const rate = slice.length ? Math.round((classified / slice.length) * 100) : 0;
+---
+
+{slice.length > 0 ? (
+  <figure class="strip">
+    {caption && <figcaption class="cap">{caption}</figcaption>}
+    <div class="cells" role="img" aria-label={`Reliability strip, ${rate}% classified`}>
+      {slice.map((c) => (
+        <span class={`cell ${c.outcome}`} title={c.title ?? c.outcome}></span>
+      ))}
+    </div>
+    <p class="legend">
+      <span class="swatch win"></span>win
+      <span class="swatch podium"></span>podium
+      <span class="swatch points"></span>points
+      <span class="swatch finish"></span>finish
+      <span class="swatch dnf"></span>DNF
+      <span class="meta"> · {rate}% classified · {dnfs} DNF / {slice.length}</span>
+    </p>
+  </figure>
+) : (
+  <p class="empty">No starts to chart.</p>
+)}
+
+<style>
+  .strip { margin: 0.75rem 0 1.25rem; }
+  .cap {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 0.35rem;
+  }
+  .cells {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    max-width: 36rem;
+  }
+  .cell {
+    width: 10px;
+    height: 14px;
+    border-radius: 1px;
+  }
+  .cell.win { background: #1a7a4c; }
+  .cell.podium { background: #2f6fed; }
+  .cell.points { background: #6b7280; }
+  .cell.finish { background: #c4c0b8; }
+  .cell.dnf { background: var(--accent); }
+  .cell.other { background: #e5e1d8; }
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 0.55rem;
+    margin: 0.45rem 0 0;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--muted);
+  }
+  .swatch {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-right: 0.15rem;
+    vertical-align: middle;
+  }
+  .swatch.win { background: #1a7a4c; }
+  .swatch.podium { background: #2f6fed; }
+  .swatch.points { background: #6b7280; }
+  .swatch.finish { background: #c4c0b8; }
+  .swatch.dnf { background: var(--accent); }
+  .meta { color: var(--muted); }
+  .empty {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+</style>

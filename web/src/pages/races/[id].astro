@@ -1,12 +1,30 @@
 ---
 import Base from '../../layouts/Base.astro';
+import GridFinishChart from '../../components/GridFinishChart.astro';
+import ReliabilityStrip from '../../components/ReliabilityStrip.astro';
 import { listRaceIds, getRace, hrefFor } from '../../lib/data';
+import { abbrevName, outcomeFromResult } from '../../lib/viz';
 
 export function getStaticPaths() {
   return listRaceIds().map((id) => ({ params: { id: String(id) } }));
 }
 
 const race = getRace(Number(Astro.params.id));
+
+const gridFinishRows = race.results.map((r: any) => ({
+  label: abbrevName(r.driverName),
+  href: hrefFor('driver', r.driverId),
+  grid: r.grid ?? null,
+  finish: r.pos ?? null,
+  gained: r.gained ?? null,
+}));
+
+const reliabilityCells = [...race.results]
+  .sort((a: any, b: any) => (a.grid ?? 99) - (b.grid ?? 99))
+  .map((r: any) => ({
+    outcome: outcomeFromResult(r),
+    title: `${r.driverName}: grid ${r.grid ?? '—'} → ${r.posText ?? '—'}${r.retired ? ` (${r.retired})` : ''}`,
+  }));
 ---
 <Base title={`${race.name} · F1 Atlas`}>
   <p class="meta">RACE · {race.year} R{race.round}</p>
@@ -19,6 +37,26 @@ const race = getRace(Number(Astro.params.id));
     · <a href={hrefFor('season', String(race.year))}>{race.year}</a>
   </p>
 
+  {race.results?.length > 0 && (
+    <>
+      <h2>Grid → finish</h2>
+      <GridFinishChart
+        rows={gridFinishRows}
+        width={400}
+        height={Math.min(420, 24 + race.results.filter((r: any) => r.grid && r.pos).length * 14)}
+        title="Classified runners only"
+      />
+
+      <h2>Field reliability</h2>
+      <ReliabilityStrip
+        cells={reliabilityCells}
+        max={40}
+        newestFirst={false}
+        caption="Ordered by grid · each cell is one starter"
+      />
+    </>
+  )}
+
   <h2>Race results</h2>
   <table class="table sticky">
     <thead>
@@ -26,7 +64,7 @@ const race = getRace(Number(Astro.params.id));
     </thead>
     <tbody>
       {race.results.map((r: any) => (
-        <tr>
+        <tr class={r.retired || (r.posText || '').toUpperCase() === 'DNF' ? 'dnf' : undefined}>
           <td>{r.posText ?? '—'}</td>
           <td><a href={hrefFor('driver', r.driverId)}>{r.driverName}</a></td>
           <td>
@@ -35,7 +73,12 @@ const race = getRace(Number(Astro.params.id));
             ) : '—'}
           </td>
           <td>{r.grid ?? '—'}</td>
-          <td>{r.gained ?? '—'}</td>
+          <td class:list={[
+            typeof r.gained === 'number' && r.gained > 0 && 'gain',
+            typeof r.gained === 'number' && r.gained < 0 && 'loss',
+          ]}>
+            {typeof r.gained === 'number' ? (r.gained > 0 ? `+${r.gained}` : r.gained) : '—'}
+          </td>
           <td>{r.laps ?? '—'}</td>
           <td>{r.time ?? r.retired ?? '—'}</td>
           <td>{r.points ?? '—'}</td>
@@ -71,4 +114,7 @@ const race = getRace(Number(Astro.params.id));
   h2 { font-size: 1.1rem; margin: 1.5rem 0 0.5rem; }
   .sticky thead th { position: sticky; top: 0; background: var(--paper); }
   a { text-decoration: none; }
+  .gain { color: #1a7a4c; font-family: var(--mono); }
+  .loss { color: var(--accent); font-family: var(--mono); }
+  tr.dnf td { color: var(--muted); }
 </style>

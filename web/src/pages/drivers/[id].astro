@@ -1,13 +1,33 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Sparkline from '../../components/Sparkline.astro';
+import GridFinishChart from '../../components/GridFinishChart.astro';
+import ReliabilityStrip from '../../components/ReliabilityStrip.astro';
 import { getDrivers, getDriver, hrefFor } from '../../lib/data';
+import { outcomeFromResult } from '../../lib/viz';
 
 export function getStaticPaths() {
   return getDrivers().map((d) => ({ params: { id: d.id } }));
 }
 
 const driver = getDriver(Astro.params.id!);
+
+// results are newest-first from ETL
+const recent = driver.results.slice(0, 24);
+const reliabilityCells = driver.results.map((r: any) => ({
+  outcome: outcomeFromResult(r),
+  title: `${r.year} R${r.round}: ${r.posText ?? '—'}${r.retired ? ` · ${r.retired}` : ''}`,
+}));
+
+const gridFinishRows = [...recent]
+  .reverse()
+  .filter((r: any) => r.grid && r.pos)
+  .map((r: any) => ({
+    label: `R${r.round}`,
+    grid: r.grid as number,
+    finish: r.pos as number,
+    gained: r.gained ?? null,
+  }));
 ---
 <Base title={`${driver.name} · F1 Atlas`}>
   <p class="meta">DRIVER · {driver.abbreviation ?? driver.id}</p>
@@ -19,6 +39,25 @@ const driver = getDriver(Astro.params.id!);
   <h2>Career finishing positions</h2>
   <Sparkline values={driver.finishSparkline ?? []} width={280} height={36} />
 
+  <h2>Reliability</h2>
+  <ReliabilityStrip
+    cells={reliabilityCells}
+    max={64}
+    caption="Recent window · older → newer"
+  />
+
+  {gridFinishRows.length > 1 && (
+    <>
+      <h2>Recent grid → finish</h2>
+      <GridFinishChart
+        rows={gridFinishRows}
+        width={320}
+        height={Math.min(360, 20 + gridFinishRows.length * 12)}
+        title="Last classified starts with grid data"
+      />
+    </>
+  )}
+
   <h2>Results</h2>
   <table class="table sticky">
     <thead>
@@ -26,12 +65,17 @@ const driver = getDriver(Astro.params.id!);
     </thead>
     <tbody>
       {driver.results.map((r: any) => (
-        <tr>
+        <tr class={r.retired || (r.posText || '').toUpperCase() === 'DNF' ? 'dnf' : undefined}>
           <td><a href={hrefFor('season', String(r.year))}>{r.year}</a></td>
           <td><a href={hrefFor('race', String(r.raceId))}>{r.raceName}</a></td>
           <td>{r.grid ?? '—'}</td>
           <td>{r.posText ?? '—'}</td>
-          <td>{r.gained ?? '—'}</td>
+          <td class:list={[
+            typeof r.gained === 'number' && r.gained > 0 && 'gain',
+            typeof r.gained === 'number' && r.gained < 0 && 'loss',
+          ]}>
+            {typeof r.gained === 'number' ? (r.gained > 0 ? `+${r.gained}` : r.gained) : '—'}
+          </td>
           <td>
             {r.constructorId ? (
               <a href={hrefFor('constructor', r.constructorId)}>{r.constructorName}</a>
@@ -46,4 +90,7 @@ const driver = getDriver(Astro.params.id!);
 <style>
   h2 { font-size: 1.1rem; margin: 1.5rem 0 0.5rem; }
   .sticky thead th { position: sticky; top: 0; background: var(--paper); }
+  .gain { color: #1a7a4c; font-family: var(--mono); }
+  .loss { color: var(--accent); font-family: var(--mono); }
+  tr.dnf td { color: var(--muted); }
 </style>
