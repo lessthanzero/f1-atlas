@@ -1,0 +1,57 @@
+---
+import { logoFor, monogram } from '../lib/logos';
+
+interface Props {
+  id: string;
+  name: string;
+  size?: 'sm' | 'md' | 'lg';
+}
+
+const { id, name, size = 'md' } = Astro.props;
+const entry = logoFor(id);
+const base = import.meta.env.BASE_URL;
+const src = entry ? `${base}logos/constructors/${entry.file}` : null;
+const letters = monogram(name);
+---
+{src ? (
+  <img class={`mark logo ${size}`} src={src} alt="" loading="lazy" />
+) : (
+  <span class={`mark mono ${size}`} aria-hidden="true">{letters}</span>
+)}
+
+<style>
+  .mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    object-fit: contain;
+  }
+  .logo.sm { width: 44px; height: 14px; }
+  .logo.md { width: 64px; height: 18px; }
+  .logo.lg { width: 120px; height: 28px; }
+  .mono {
+    font-family: var(--mono);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    color: var(--ink);
+    background: #fff;
+    border: 1px solid var(--ink);
+    line-height: 1;
+  }
+  .mono.sm {
+    width: 18px;
+    height: 18px;
+    font-size: 0.55rem;
+  }
+  .mono.md {
+    width: 24px;
+    height: 24px;
+    font-size: 0.65rem;
+  }
+  .mono.lg {
+    width: 40px;
+    height: 40px;
+    font-size: 0.95rem;
+  }
+</style>

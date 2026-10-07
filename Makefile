@@ -1,4 +1,4 @@
-.PHONY: bootstrap fetch etl build test dev clean
+.PHONY: bootstrap fetch etl logos build test dev clean
 
 bootstrap:
 	python3 -m venv .venv
@@ -11,6 +11,9 @@ fetch:
 
 etl:
 	.venv/bin/python -m f1_atlas_etl build
+
+logos:
+	python3 scripts/fetch_logos.py
 
 build: etl
 	cd web && npm run build

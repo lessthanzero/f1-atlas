@@ -1,5 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
+import Country from '../../components/Country.astro';
+import ConstructorMark from '../../components/ConstructorMark.astro';
 import { getConstructors, hrefFor } from '../../lib/data';
 const constructors = getConstructors();
 ---
@@ -13,8 +15,19 @@ const constructors = getConstructors();
     <tbody>
       {constructors.map((c) => (
         <tr>
-          <td><a href={hrefFor('constructor', c.id)}>{c.name}</a></td>
-          <td>{c.country ?? '—'}</td>
+          <td>
+            <a class="team-link" href={hrefFor('constructor', c.id)}>
+              <ConstructorMark id={c.id} name={c.name} size="sm" />
+              <span>{c.name}</span>
+            </a>
+          </td>
+          <td>
+            <Country
+              countryName={c.countryName}
+              countryCode={c.countryCode}
+              countryId={c.countryId}
+            />
+          </td>
           <td>{c.wins}</td>
           <td>{c.podiums}</td>
           <td>{c.poles}</td>
@@ -27,4 +40,11 @@ const constructors = getConstructors();
 </Base>
 <style>
   .sticky thead th { position: sticky; top: 0; background: var(--paper); }
+  .team-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    text-decoration: none;
+    font-weight: 600;
+  }
 </style>

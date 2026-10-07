@@ -65,7 +65,9 @@ export function getDrivers() {
       id: string;
       name: string;
       abbreviation: string | null;
-      nationality: string | null;
+      countryId: string | null;
+      countryName: string | null;
+      countryCode: string | null;
       titles: number;
       starts: number;
       wins: number;
@@ -85,7 +87,9 @@ export function getConstructors() {
     Array<{
       id: string;
       name: string;
-      country: string | null;
+      countryId: string | null;
+      countryName: string | null;
+      countryCode: string | null;
       titles: number;
       starts: number;
       wins: number;
@@ -105,7 +109,9 @@ export function getCircuits() {
     Array<{
       id: string;
       name: string;
-      country: string | null;
+      countryId: string | null;
+      countryName: string | null;
+      countryCode: string | null;
       place: string | null;
       races: number | null;
       length_km: number | null;

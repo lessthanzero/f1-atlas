@@ -25,20 +25,31 @@ def export_site_json(db_path: Path, out_dir: Path) -> None:
     try:
         meta = {r["key"]: r["value"] for r in conn.execute("SELECT key, value FROM meta")}
         seasons = [r["year"] for r in conn.execute("SELECT year FROM seasons ORDER BY year DESC")]
+        countries = [
+            dict(r)
+            for r in conn.execute(
+                "SELECT id AS countryId, name AS countryName, alpha2 AS countryCode FROM countries ORDER BY name"
+            )
+        ]
         _dump(out_dir / "meta.json", meta)
         _dump(out_dir / "seasons.json", seasons)
+        _dump(out_dir / "countries.json", countries)
 
         drivers = [
             dict(r)
             for r in conn.execute(
                 """
-                SELECT id, name, abbreviation, nationality_country_id AS nationality,
-                       total_championship_wins AS titles, total_race_starts AS starts,
-                       total_race_wins AS wins, total_podiums AS podiums,
-                       total_poles AS poles, total_points AS points
-                FROM drivers
-                WHERE total_race_starts > 0
-                ORDER BY total_race_wins DESC, total_points DESC, name
+                SELECT d.id, d.name, d.abbreviation,
+                       d.nationality_country_id AS countryId,
+                       c.name AS countryName,
+                       c.alpha2 AS countryCode,
+                       d.total_championship_wins AS titles, d.total_race_starts AS starts,
+                       d.total_race_wins AS wins, d.total_podiums AS podiums,
+                       d.total_poles AS poles, d.total_points AS points
+                FROM drivers d
+                LEFT JOIN countries c ON c.id = d.nationality_country_id
+                WHERE d.total_race_starts > 0
+                ORDER BY d.total_race_wins DESC, d.total_points DESC, d.name
                 """
             )
         ]
@@ -46,13 +57,17 @@ def export_site_json(db_path: Path, out_dir: Path) -> None:
             dict(r)
             for r in conn.execute(
                 """
-                SELECT id, name, country_id AS country,
-                       total_championship_wins AS titles, total_race_starts AS starts,
-                       total_race_wins AS wins, total_podiums AS podiums,
-                       total_poles AS poles, total_points AS points
-                FROM constructors
-                WHERE total_race_starts > 0
-                ORDER BY total_race_wins DESC, total_points DESC, name
+                SELECT co.id, co.name,
+                       co.country_id AS countryId,
+                       c.name AS countryName,
+                       c.alpha2 AS countryCode,
+                       co.total_championship_wins AS titles, co.total_race_starts AS starts,
+                       co.total_race_wins AS wins, co.total_podiums AS podiums,
+                       co.total_poles AS poles, co.total_points AS points
+                FROM constructors co
+                LEFT JOIN countries c ON c.id = co.country_id
+                WHERE co.total_race_starts > 0
+                ORDER BY co.total_race_wins DESC, co.total_points DESC, co.name
                 """
             )
         ]
@@ -60,10 +75,15 @@ def export_site_json(db_path: Path, out_dir: Path) -> None:
             dict(r)
             for r in conn.execute(
                 """
-                SELECT id, name, country_id AS country, place_name AS place,
-                       total_races_held AS races, length_km, turns
-                FROM circuits
-                ORDER BY total_races_held DESC, name
+                SELECT ci.id, ci.name,
+                       ci.country_id AS countryId,
+                       c.name AS countryName,
+                       c.alpha2 AS countryCode,
+                       ci.place_name AS place,
+                       ci.total_races_held AS races, ci.length_km, ci.turns
+                FROM circuits ci
+                LEFT JOIN countries c ON c.id = ci.country_id
+                ORDER BY ci.total_races_held DESC, ci.name
                 """
             )
         ]
@@ -166,12 +186,17 @@ def _export_driver(conn: sqlite3.Connection, folder: Path, driver_id: str) -> No
     info = dict(
         conn.execute(
             """
-            SELECT id, name, abbreviation, nationality_country_id AS nationality,
-                   total_championship_wins AS titles, total_race_starts AS starts,
-                   total_race_wins AS wins, total_podiums AS podiums,
-                   total_poles AS poles, total_fastest_laps AS fastestLaps,
-                   total_points AS points
-            FROM drivers WHERE id = ?
+            SELECT d.id, d.name, d.abbreviation,
+                   d.nationality_country_id AS countryId,
+                   c.name AS countryName,
+                   c.alpha2 AS countryCode,
+                   d.total_championship_wins AS titles, d.total_race_starts AS starts,
+                   d.total_race_wins AS wins, d.total_podiums AS podiums,
+                   d.total_poles AS poles, d.total_fastest_laps AS fastestLaps,
+                   d.total_points AS points
+            FROM drivers d
+            LEFT JOIN countries c ON c.id = d.nationality_country_id
+            WHERE d.id = ?
             """,
             (driver_id,),
         ).fetchone()
@@ -210,11 +235,16 @@ def _export_constructor(conn: sqlite3.Connection, folder: Path, constructor_id: 
     info = dict(
         conn.execute(
             """
-            SELECT id, name, full_name AS fullName, country_id AS country,
-                   total_championship_wins AS titles, total_race_starts AS starts,
-                   total_race_wins AS wins, total_podiums AS podiums,
-                   total_poles AS poles, total_points AS points
-            FROM constructors WHERE id = ?
+            SELECT co.id, co.name, co.full_name AS fullName,
+                   co.country_id AS countryId,
+                   c.name AS countryName,
+                   c.alpha2 AS countryCode,
+                   co.total_championship_wins AS titles, co.total_race_starts AS starts,
+                   co.total_race_wins AS wins, co.total_podiums AS podiums,
+                   co.total_poles AS poles, co.total_points AS points
+            FROM constructors co
+            LEFT JOIN countries c ON c.id = co.country_id
+            WHERE co.id = ?
             """,
             (constructor_id,),
         ).fetchone()
@@ -247,10 +277,15 @@ def _export_circuit(conn: sqlite3.Connection, folder: Path, circuit_id: str) -> 
     info = dict(
         conn.execute(
             """
-            SELECT id, name, full_name AS fullName, country_id AS country,
-                   place_name AS place, latitude, longitude, length_km AS lengthKm,
-                   turns, total_races_held AS races
-            FROM circuits WHERE id = ?
+            SELECT ci.id, ci.name, ci.full_name AS fullName,
+                   ci.country_id AS countryId,
+                   c.name AS countryName,
+                   c.alpha2 AS countryCode,
+                   ci.place_name AS place, ci.latitude, ci.longitude,
+                   ci.length_km AS lengthKm, ci.turns, ci.total_races_held AS races
+            FROM circuits ci
+            LEFT JOIN countries c ON c.id = ci.country_id
+            WHERE ci.id = ?
             """,
             (circuit_id,),
         ).fetchone()

@@ -1,0 +1,132 @@
+{
+  "alfa-romeo": {
+    "file": "alfa-romeo.svg",
+    "license": "Simple wordmark generated for F1 Atlas (trademarks still apply)",
+    "source": "atlas-wordmark"
+  },
+  "alphatauri": {
+    "file": "alphatauri.svg",
+    "license": "Simple wordmark generated for F1 Atlas (trademarks still apply)",
+    "source": "atlas-wordmark"
+  },
+  "alpine": {
+    "file": "alpine.svg",
+    "license": "Wikimedia Commons (often PD-textlogo; trademarks still apply)",
+    "source": "https://commons.wikimedia.org/wiki/File:Alpine_F1_Team_Logo.svg"
+  },
+  "aston-martin": {
+    "file": "aston-martin.svg",
+    "license": "Simple wordmark generated for F1 Atlas (trademarks still apply)",
+    "source": "atlas-wordmark"
+  },
+  "benetton": {
+    "file": "benetton.svg",
+    "license": "Simple wordmark generated for F1 Atlas (trademarks still apply)",
+    "source": "atlas-wordmark"
+  },
+  "bmw-sauber": {
+    "file": "bmw-sauber.svg",
+    "license": "Wikimedia Commons (often PD-textlogo; trademarks still apply)",
+    "source": "https://commons.wikimedia.org/wiki/File:BMW_logo_(gray).svg"
+  },
+  "brabham": {
+    "file": "brabham.svg",
+    "license": "Simple wordmark generated for F1 Atlas (trademarks still apply)",
+    "source": "atlas-wordmark"
+  },
+  "brawn": {
+    "file": "brawn.svg",
+    "license": "Wikimedia Commons (often PD-textlogo; trademarks still apply)",
+    "source": "https://commons.wikimedia.org/wiki/File:Brawn_GP_logo.svg"
+  },
+  "ferrari": {
+    "file": "ferrari.svg",
+    "license": "Simple wordmark generated for F1 Atlas (trademarks still apply)",
+    "source": "atlas-wordmark"
+  },
+  "haas": {
+    "file": "haas.svg",
+    "license": "Wikimedia Commons (often PD-textlogo; trademarks still apply)",
+    "source": "https://commons.wikimedia.org/wiki/File:Haas_F1_Team_Logo.svg"
+  },
+  "honda": {
+    "file": "honda.svg",
+    "license": "Wikimedia Commons (often PD-textlogo; trademarks still apply)",
+    "source": "https://commons.wikimedia.org/wiki/File:Logo_Honda_F1.svg"
+  },
+  "kick-sauber": {
+    "file": "kick-sauber.svg",
+    "license": "Simple wordmark generated for F1 Atlas (trademarks still apply)",
+    "source": "atlas-wordmark"
+  },
+  "lotus": {
+    "file": "lotus.svg",
+    "license": "Simple wordmark generated for F1 Atlas (trademarks still apply)",
+    "source": "atlas-wordmark"
+  },
+  "lotus-f1": {
+    "file": "lotus-f1.svg",
+    "license": "Simple wordmark generated for F1 Atlas (trademarks still apply)",
+    "source": "atlas-wordmark"
+  },
+  "mclaren": {
+    "file": "mclaren.svg",
+    "license": "Wikimedia Commons (often PD-textlogo; trademarks still apply)",
+    "source": "https://commons.wikimedia.org/wiki/File:McLaren_2018_logo.svg"
+  },
+  "mercedes": {
+    "file": "mercedes.svg",
+    "license": "Wikimedia Commons (often PD-textlogo; trademarks still apply)",
+    "source": "https://commons.wikimedia.org/wiki/File:Mercedes-AMG_Petronas_F1_Team_logo_(2026).svg"
+  },
+  "porsche": {
+    "file": "porsche.svg",
+    "license": "Wikimedia Commons (often PD-textlogo; trademarks still apply)",
+    "source": "https://commons.wikimedia.org/wiki/File:Porsche_wordmark.svg"
+  },
+  "racing-bulls": {
+    "file": "racing-bulls.svg",
+    "license": "Simple wordmark generated for F1 Atlas (trademarks still apply)",
+    "source": "atlas-wordmark"
+  },
+  "racing-point": {
+    "file": "racing-point.svg",
+    "license": "Wikimedia Commons (often PD-textlogo; trademarks still apply)",
+    "source": "https://commons.wikimedia.org/wiki/File:BWT_Racing_Point_Logo.svg"
+  },
+  "rb": {
+    "file": "rb.svg",
+    "license": "Simple wordmark generated for F1 Atlas (trademarks still apply)",
+    "source": "atlas-wordmark"
+  },
+  "red-bull": {
+    "file": "red-bull.svg",
+    "license": "Simple wordmark generated for F1 Atlas (trademarks still apply)",
+    "source": "atlas-wordmark"
+  },
+  "renault": {
+    "file": "renault.svg",
+    "license": "Wikimedia Commons (often PD-textlogo; trademarks still apply)",
+    "source": "https://commons.wikimedia.org/wiki/File:RENAULT_F1.svg"
+  },
+  "sauber": {
+    "file": "sauber.svg",
+    "license": "Wikimedia Commons (often PD-textlogo; trademarks still apply)",
+    "source": "https://commons.wikimedia.org/wiki/File:Sauber_F1_Team_logo.svg"
+  },
+  "toro-rosso": {
+    "file": "toro-rosso.svg",
+    "license": "Simple wordmark generated for F1 Atlas (trademarks still apply)",
+    "source": "atlas-wordmark"
+  },
+  "tyrrell": {
+    "file": "tyrrell.svg",
+    "license": "Wikimedia Commons (often PD-textlogo; trademarks still apply)",
+    "source": "https://commons.wikimedia.org/wiki/File:Tyrrell_Racing_logo.svg"
+  },
+  "williams": {
+    "file": "williams.svg",
+    "license": "Simple wordmark generated for F1 Atlas (trademarks still apply)",
+    "source": "atlas-wordmark"
+  }
+}

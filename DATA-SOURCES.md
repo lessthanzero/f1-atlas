@@ -14,6 +14,10 @@ Example credit line:
 
 API-compatible historical/current results (Ergast-compatible). Check upstream terms before redistributing raw dumps; prefer regenerating via ETL.
 
+## Constructor logos
+
+Wordmark/logo SVGs for the current grid and constructors with ≥1 win live under `web/public/logos/constructors/`, sourced from Wikimedia Commons where available (`scripts/fetch_logos.py`). See `web/public/logos/README.md` for trademark notice and `_manifest.json` for per-file links.
+
 ## Rules
 
 - Never invent race results, standings, or derived statistics silently.

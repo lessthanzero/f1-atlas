@@ -20,6 +20,7 @@ def test_schema_creates_core_tables():
         assert {
             "meta",
             "seasons",
+            "countries",
             "races",
             "drivers",
             "constructors",

@@ -12,6 +12,12 @@ CREATE TABLE seasons (
   year INTEGER PRIMARY KEY
 );
 
+CREATE TABLE countries (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  alpha2 TEXT
+);
+
 CREATE TABLE circuits (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,

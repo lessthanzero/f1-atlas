@@ -3,6 +3,8 @@ import Base from '../../layouts/Base.astro';
 import Sparkline from '../../components/Sparkline.astro';
 import GridFinishChart from '../../components/GridFinishChart.astro';
 import ReliabilityStrip from '../../components/ReliabilityStrip.astro';
+import Country from '../../components/Country.astro';
+import ConstructorMark from '../../components/ConstructorMark.astro';
 import { getDrivers, getDriver, hrefFor } from '../../lib/data';
 import { outcomeFromResult } from '../../lib/viz';
 
@@ -12,7 +14,6 @@ export function getStaticPaths() {
 
 const driver = getDriver(Astro.params.id!);
 
-// results are newest-first from ETL
 const recent = driver.results.slice(0, 24);
 const reliabilityCells = driver.results.map((r: any) => ({
   outcome: outcomeFromResult(r),
@@ -33,7 +34,12 @@ const gridFinishRows = [...recent]
   <p class="meta">DRIVER · {driver.abbreviation ?? driver.id}</p>
   <h1>{driver.name}</h1>
   <p class="meta">
-    {driver.nationality ?? '—'} · {driver.titles} titles · {driver.wins} wins · {driver.podiums} podiums · {driver.poles} poles · {driver.starts} starts
+    <Country
+      countryName={driver.countryName}
+      countryCode={driver.countryCode}
+      countryId={driver.countryId}
+    />
+    · {driver.titles} titles · {driver.wins} wins · {driver.podiums} podiums · {driver.poles} poles · {driver.starts} starts
   </p>
 
   <h2>Career finishing positions</h2>
@@ -78,7 +84,10 @@ const gridFinishRows = [...recent]
           </td>
           <td>
             {r.constructorId ? (
-              <a href={hrefFor('constructor', r.constructorId)}>{r.constructorName}</a>
+              <a class="team-link" href={hrefFor('constructor', r.constructorId)}>
+                <ConstructorMark id={r.constructorId} name={r.constructorName} size="sm" />
+                <span>{r.constructorName}</span>
+              </a>
             ) : '—'}
           </td>
           <td>{r.points ?? '—'}</td>
@@ -93,4 +102,10 @@ const gridFinishRows = [...recent]
   .gain { color: #1a7a4c; font-family: var(--mono); }
   .loss { color: var(--accent); font-family: var(--mono); }
   tr.dnf td { color: var(--muted); }
+  .team-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    text-decoration: none;
+  }
 </style>

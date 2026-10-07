@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import GridFinishChart from '../../components/GridFinishChart.astro';
 import ReliabilityStrip from '../../components/ReliabilityStrip.astro';
+import ConstructorMark from '../../components/ConstructorMark.astro';
 import { listRaceIds, getRace, hrefFor } from '../../lib/data';
 import { abbrevName, outcomeFromResult } from '../../lib/viz';
 
@@ -69,7 +70,10 @@ const reliabilityCells = [...race.results]
           <td><a href={hrefFor('driver', r.driverId)}>{r.driverName}</a></td>
           <td>
             {r.constructorId ? (
-              <a href={hrefFor('constructor', r.constructorId)}>{r.constructorName}</a>
+              <a class="team-link" href={hrefFor('constructor', r.constructorId)}>
+                <ConstructorMark id={r.constructorId} name={r.constructorName} size="sm" />
+                <span>{r.constructorName}</span>
+              </a>
             ) : '—'}
           </td>
           <td>{r.grid ?? '—'}</td>
@@ -99,7 +103,10 @@ const reliabilityCells = [...race.results]
               <td><a href={hrefFor('driver', q.driverId)}>{q.driverName}</a></td>
               <td>
                 {q.constructorId ? (
-                  <a href={hrefFor('constructor', q.constructorId)}>{q.constructorName}</a>
+                  <a class="team-link" href={hrefFor('constructor', q.constructorId)}>
+                    <ConstructorMark id={q.constructorId} name={q.constructorName} size="sm" />
+                    <span>{q.constructorName}</span>
+                  </a>
                 ) : '—'}
               </td>
               <td>{q.time ?? '—'}</td>
@@ -117,4 +124,9 @@ const reliabilityCells = [...race.results]
   .gain { color: #1a7a4c; font-family: var(--mono); }
   .loss { color: var(--accent); font-family: var(--mono); }
   tr.dnf td { color: var(--muted); }
+  .team-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
 </style>

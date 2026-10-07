@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import Country from '../../components/Country.astro';
 import { getCircuits, getCircuit, hrefFor } from '../../lib/data';
 
 export function getStaticPaths() {
@@ -12,7 +13,13 @@ const circuit = getCircuit(Astro.params.id!);
   <p class="meta">CIRCUIT</p>
   <h1>{circuit.name}</h1>
   <p class="meta">
-    {circuit.place ?? '—'}, {circuit.country ?? '—'} · {circuit.races ?? 0} races
+    {circuit.place ?? '—'},{' '}
+    <Country
+      countryName={circuit.countryName}
+      countryCode={circuit.countryCode}
+      countryId={circuit.countryId}
+    />
+    · {circuit.races ?? 0} races
     {circuit.lengthKm ? ` · ${circuit.lengthKm} km` : ''}
   </p>
 

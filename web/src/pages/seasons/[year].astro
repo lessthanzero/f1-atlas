@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import ConstructorMark from '../../components/ConstructorMark.astro';
 import { getSeasons, getSeason, hrefFor } from '../../lib/data';
 
 export function getStaticPaths() {
@@ -36,7 +37,12 @@ const season = getSeason(year);
           {season.constructorStandings.map((row) => (
             <tr>
               <td>{row.posText ?? '—'}</td>
-              <td><a href={hrefFor('constructor', row.constructorId)}>{row.constructorName}</a></td>
+              <td>
+                <a class="team-link" href={hrefFor('constructor', row.constructorId)}>
+                  <ConstructorMark id={row.constructorId} name={row.constructorName} size="sm" />
+                  <span>{row.constructorName}</span>
+                </a>
+              </td>
               <td>{row.points ?? '—'}</td>
             </tr>
           ))}
@@ -66,4 +72,10 @@ const season = getSeason(year);
 </Base>
 <style>
   h2 { font-size: 1.1rem; margin: 1.75rem 0 0.55rem; }
+  .team-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    text-decoration: none;
+  }
 </style>

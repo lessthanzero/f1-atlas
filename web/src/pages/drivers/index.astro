@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import Country from '../../components/Country.astro';
 import { getDrivers, hrefFor } from '../../lib/data';
 const drivers = getDrivers();
 ---
@@ -14,7 +15,13 @@ const drivers = getDrivers();
       {drivers.map((d) => (
         <tr>
           <td><a href={hrefFor('driver', d.id)}>{d.name}</a></td>
-          <td>{d.nationality ?? '—'}</td>
+          <td>
+            <Country
+              countryName={d.countryName}
+              countryCode={d.countryCode}
+              countryId={d.countryId}
+            />
+          </td>
           <td>{d.wins}</td>
           <td>{d.podiums}</td>
           <td>{d.poles}</td>

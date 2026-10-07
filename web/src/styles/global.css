@@ -26,8 +26,15 @@ main {
 }
 h1 {
   font-size: clamp(1.8rem, 4vw, 2.6rem);
-  letter-spacing: -0.03em;
+  font-weight: 800;
+  letter-spacing: -0.04em;
   margin: 0 0 0.35rem;
+  color: var(--ink);
+}
+h2 {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ink);
 }
 .lede { color: var(--muted); max-width: 36rem; }
 .table {
@@ -41,5 +48,18 @@ h1 {
   text-align: left;
   padding: 0.45rem 0.35rem;
 }
+.table th {
+  font-weight: 600;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
 .table th:first-child, .table td:first-child { font-family: var(--mono); }
-.meta { font-family: var(--mono); font-size: 0.78rem; color: var(--muted); }
+.meta {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--muted);
+}

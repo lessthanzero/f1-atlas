@@ -1,0 +1,29 @@
+---
+import { countryLabel, flagEmoji } from '../lib/countries';
+
+interface Props {
+  countryName?: string | null;
+  countryCode?: string | null;
+  countryId?: string | null;
+}
+
+const { countryName, countryCode, countryId } = Astro.props;
+const flag = flagEmoji(countryCode);
+const name = countryName?.trim() || countryId || '—';
+const label = countryLabel({ countryName, countryCode, countryId });
+---
+<span class="country" title={label}>
+  {flag && <span class="flag" aria-hidden="true">{flag}</span>}
+  <span class="name">{name}</span>
+</span>
+
+<style>
+  .country {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.35rem;
+    white-space: nowrap;
+  }
+  .flag { font-style: normal; line-height: 1; }
+  .name { font-variant-numeric: normal; }
+</style>

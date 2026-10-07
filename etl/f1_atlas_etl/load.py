@@ -34,6 +34,7 @@ def load_csv_dir(csv_dir: Path, db_path: Path, source_tag: str) -> None:
     try:
         conn.executescript(SCHEMA)
         _load_seasons(conn, csv_dir / "f1db-seasons.csv")
+        _load_countries(conn, csv_dir / "f1db-countries.csv")
         _load_circuits(conn, csv_dir / "f1db-circuits.csv")
         _load_drivers(conn, csv_dir / "f1db-drivers.csv")
         _load_constructors(conn, csv_dir / "f1db-constructors.csv")
@@ -44,7 +45,7 @@ def load_csv_dir(csv_dir: Path, db_path: Path, source_tag: str) -> None:
         _load_constructor_standings(conn, csv_dir / "f1db-seasons-constructor-standings.csv")
         conn.execute(
             "INSERT INTO meta(key, value) VALUES (?, ?)",
-            ("schema_version", "0.2.0"),
+            ("schema_version", "0.3.0"),
         )
         conn.execute(
             "INSERT INTO meta(key, value) VALUES (?, ?)",
@@ -72,6 +73,16 @@ def _load_seasons(conn: sqlite3.Connection, path: Path) -> None:
     conn.executemany(
         "INSERT INTO seasons(year) VALUES (?)",
         [(int(r["year"]),) for r in _rows(path)],
+    )
+
+
+def _load_countries(conn: sqlite3.Connection, path: Path) -> None:
+    conn.executemany(
+        "INSERT INTO countries(id, name, alpha2) VALUES (?, ?, ?)",
+        [
+            (r["id"], r["name"], (r["alpha2Code"] or None))
+            for r in _rows(path)
+        ],
     )
 
 
